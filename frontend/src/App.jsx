@@ -32,10 +32,10 @@ function App() {
       name: 'Japanese Garden',
       url: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=1200&q=80',
     },
-    {
-      name: 'Cosmic Calm',
-      url: 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b41?auto=format&fit=crop&w=1200&q=80',
-    },
+    // {
+    //   name: 'Cosmic Calm',
+    //   url: 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b41?auto=format&fit=crop&w=1200&q=80',
+    // },
   ];
 
   const [bgIndex, setBgIndex] = useState(0);
@@ -216,34 +216,46 @@ function App() {
       </div>
 
       {/* BACKGROUND SELECTOR */}
-      <div className="absolute top-4 right-4 z-20 flex gap-2">
-        {backgrounds.map((bg, idx) => (
-          <button
-            key={idx}
-            onClick={() => setBgIndex(idx)}
-            className={`w-14 h-14 rounded-xl overflow-hidden border-2 transition-all duration-200 ${
-              bgIndex === idx
-                ? 'ring-4 ring-emerald-400 scale-110 border-emerald-400'
-                : 'border-white/50 opacity-80'
-            }`}
-            title={bg.name}
-          >
-            <img
-              src={bg.url}
-              alt={bg.name}
-              className="w-full h-full object-cover"
-            />
-          </button>
-        ))}
+      <div
+        className="fixed md:absolute top-2 md:top-4 right-0 left-0 md:right-4 md:left-auto z-20 flex flex-row justify-center md:justify-end gap-2 px-2 md:px-0"
+        style={{pointerEvents:'none'}}
+      >
+        <div className="flex flex-row gap-2 bg-white/40 md:bg-transparent rounded-xl py-1 px-2 shadow md:shadow-none backdrop-blur-sm md:backdrop-blur-0" style={{pointerEvents:'auto'}}>
+          {backgrounds.map((bg, idx) => (
+            <button
+              key={idx}
+              onClick={() => setBgIndex(idx)}
+              className={`w-12 h-12 md:w-14 md:h-14 rounded-xl overflow-hidden border-2 transition-all duration-200 ${
+                bgIndex === idx
+                  ? 'ring-4 ring-emerald-400 scale-110 border-emerald-400'
+                  : 'border-white/50 opacity-80'
+              }`}
+              title={bg.name}
+            >
+              <img
+                src={bg.url}
+                alt={bg.name}
+                className="w-full h-full object-cover"
+              />
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* MAIN GLASS CARD */}
       <div className="relative z-10 backdrop-blur-xl bg-white/60 border border-emerald-100 rounded-[2.5rem] shadow-3xl p-10 w-full max-w-2xl mx-4 flex flex-col gap-10">
 
-        <h1 className="text-5xl font-extrabold text-center text-emerald-700 drop-shadow-lg tracking-tight mb-2 animate-float" style={{letterSpacing:'0.04em'}}>
-          Sonic Healing App
-        </h1>
-        <p className="text-xl text-emerald-900/80 text-center mb-4 font-light" style={{letterSpacing:'0.02em'}}>Experience deep relaxation and healing through sound.</p>
+        {/* App Title and Description below thumbnails */}
+        <div className="flex flex-col items-center w-full mt-8 md:mt-12 mb-2 md:mb-4">
+          <h1 className="text-5xl p-4 font-extrabold text-center text-emerald-700 drop-shadow-lg tracking-tight animate-float" style={{letterSpacing:'0.04em'}}>
+            Sonic Healing App
+          </h1>
+          <p className="text-xl text-emerald-900/80 text-center mt-2 mb-4 font-light" style={{letterSpacing:'0.02em'}}>Experience deep relaxation and healing through sound.</p>
+        </div>
+        <div className="mb-4 px-4 py-3 rounded-xl bg-emerald-50/80 border border-emerald-100 text-emerald-800 text-center text-base shadow-sm max-w-xl mx-auto">
+          <span className="font-semibold">Meditation Advice:</span> <br/>
+          Sit comfortably, close your eyes, and focus on your breath. Let thoughts drift by like clouds. If your mind wanders, gently return to your breath or the sound. Be kind to yourself—there is no right or wrong way to meditate. Just be present and enjoy this peaceful moment.
+        </div>
 
         {/* SOUND PLAYER */}
         <section className="rounded-[1.5rem] p-8 bg-gradient-to-br from-white via-emerald-50 to-sky-50 shadow-3xl flex flex-col items-center gap-8 border border-emerald-100/60 backdrop-blur-2xl">
