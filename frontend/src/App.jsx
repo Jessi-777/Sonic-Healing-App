@@ -1,12 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import sound1 from './assets/sounds/1.mp3';
-import sound2 from './assets/sounds/2.mp3';
-import sound3 from './assets/sounds/3.mp3';
-import sound4 from './assets/sounds/4.mp3';
-import freq528 from './assets/sounds/frequencies/528hz.mp3';
-import freq432 from './assets/sounds/frequencies/432hz.mp3';
-import freq396 from './assets/sounds/frequencies/396hz.mp3';
-import gong1 from './assets/sounds/gong1.mp3';
+
+
 
 function App() {
     // Gong audio ref for timer end
@@ -42,14 +36,16 @@ function App() {
 
       // Use local mp3 files for sounds
       const sounds = {
-        sound1: sound1,
-        sound2: sound2,
-        sound3: sound3,
-        sound4: sound4,
-        freq528: freq528,
-        freq432: freq432,
-        freq396: freq396,
+        sound1: '/audio/1.mp3',
+        sound2: '/audio/2.mp3',
+        sound3: '/audio/3.mp3',
+        sound4: '/audio/4.mp3',
+        freq528: '/audio/frequencies/528hz.mp3',
+        freq432: '/audio/frequencies/432hz.mp3',
+        freq396: '/audio/frequencies/396hz.mp3',
+        gong: '/audio/gong1.mp3',
       };
+
 
       const audioRefs = {
         sound1: useRef(null),
@@ -314,9 +310,9 @@ function App() {
         </section>
 
         {/* Frequency Healing Tones */}
-        <div className="w-full flex flex-col items-center gap-2 mt-4">
+        <div className="w-full flex flex-col items-center gap-4 mt-8 mb-4">
           <h3 className="text-xl font-bold text-black mb-2" style={{letterSpacing:'0.05em'}}>Frequency Healing</h3>
-          <div className="flex flex-wrap gap-4 justify-center">
+          <div className="flex flex-row flex-wrap gap-4 justify-center w-full min-h-[60px]">
             <button
               className={`px-6 py-2 rounded-full font-semibold shadow-lg hover:scale-105 transition-all border-2 border-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-200
                 ${freqStates.freq528
@@ -402,7 +398,13 @@ function App() {
       </div>
 
       {/* Hidden gentle gong audio for timer end */}
-      <audio ref={gentleGongRef} src={gong1} preload="auto" style={{ display: 'none' }} />
+      <audio
+          ref={gentleGongRef}
+          src={sounds.gong}
+          preload="auto"
+          style={{ display: 'none' }}
+        />
+
       {/* ANIMATIONS */}
       <style>{`
         @keyframes float {
