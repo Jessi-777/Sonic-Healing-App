@@ -7,24 +7,24 @@ function App() {
     const gentleGongRef = useRef(null);
   const backgrounds = [
     {
-      name: 'Zen Bamboo Forest',
-      url: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80',
+      name: 'Am Forest',
+      url: 'https://res.cloudinary.com/dk25jqckw/image/upload/v1770702401/brianna-parks-9GxWfpg8FbA-unsplash_jwckna.jpg',
     },
     {
-      name: 'Misty Lake',
-      url: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=1200&q=80',
+      name: 'Beautiful Lake',
+      url: 'https://res.cloudinary.com/dk25jqckw/image/upload/v1770755057/IMG_4981_of6atq.jpg',
     },
     {
-      name: 'Mountain Sunrise',
-      url: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80',
+      name: 'Double Rainbow',
+      url: 'https://res.cloudinary.com/dk25jqckw/image/upload/v1770754604/babe-took-this_3_ytwlig.jpg',
     },
     {
-      name: 'Peaceful Waterfall',
+      name: 'Peaceful Zen Garden',
       url: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=1200&q=80',
     },
     {
-      name: 'Japanese Garden',
-      url: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=1200&q=80',
+      name: 'Himalayan Mountains',
+      url: 'https://res.cloudinary.com/dk25jqckw/image/upload/v1770755227/himalaya007_l4hacv.jpg',
     },
     // {
     //   name: 'Cosmic Calm',
