@@ -11,7 +11,7 @@ function App() {
   
     {
       name: 'Mountain Sunrise',
-      url: "https://res.cloudinary.com/dk25jqckw/image/upload/v1770702386/brianna-parks-9GxWfpg8FbA-unsplash_tqwwmo.jpg"
+      url: "https://res.cloudinary.com/ninjagrvl/image/upload/v1700296980/socialmedia_folder/bnjsga8xrryuh40sij7y.jpg"
     },
     {
       name: 'Peaceful after rain',
