@@ -8,7 +8,7 @@ function App() {
     { name: 'Beautiful Lake', url: 'https://res.cloudinary.com/dk25jqckw/image/upload/v1770755057/IMG_4981_of6atq.jpg' },
     { name: 'Double Rainbow', url: 'https://res.cloudinary.com/dk25jqckw/image/upload/v1770754604/babe-took-this_3_ytwlig.jpg' },
     { name: 'Peaceful Zen Garden', url: 'https://res.cloudinary.com/ninjagrvl/image/upload/v1771394783/ec9wd50vlrvcaeocf90y.png' },
-    { name: 'Himalayan Mountains', url: 'https://res.cloudinary.com/ninjagrvl/image/upload/v1771394071/dthxppjf0rxnu73dcjup.png' },
+    { name: 'Rainforest', url: 'https://res.cloudinary.com/ninjagrvl/image/upload/v1771398228/njxhneme7ifznyt7zk6f.png' },
   ];
 
   const [bgIndex, setBgIndex] = useState(0);
@@ -545,10 +545,12 @@ function App() {
               ? 'text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-100 to-cyan-400 title-glow'
               : 'text-transparent bg-clip-text bg-gradient-to-b from-slate-900 via-emerald-800 to-emerald-600'
           }`}>
-            Sonic
+            {/* sonic */}
+            Pura Vida 
             <br />
             <span className={darkMode ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-violet-300 to-cyan-300' : 'text-emerald-600'}>
-              Healing
+              {/* healing */}
+              Flow
             </span>
           </h1>
 
@@ -817,7 +819,7 @@ function App() {
         color: darkMode ? 'rgba(34,211,238,0.15)' : 'rgba(0,0,0,0.1)', fontWeight: 300, whiteSpace: 'nowrap',
         fontFamily: 'Cinzel, serif',
       }}>
-        Tica Rey Presents Sonic Healing 
+        Tica Rey Presents Pura Vida Flow 
       </div>
 
       {/* ── FOOTER DISCLAIMER ── */}
