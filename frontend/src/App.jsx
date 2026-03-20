@@ -158,7 +158,8 @@ function App() {
   //   setSoundStates({ sound1: false, sound2: false, sound3: false, sound4: false, sound5: false, sound6: false, [type]: isOn });
   // };
 
-  const toggleSound = (type) => {
+ 
+const toggleSound = (type) => {
   // unlock audio once (fixes iOS / Chrome issues)
   if (!audioUnlocked) {
     Object.values(soundRefs).forEach(ref => {
@@ -175,21 +176,22 @@ function App() {
 
   const isOn = !soundStates[type];
 
-  // fade out ALL sounds first
+  // fade out all, then play new one after fade completes
   Object.entries(soundRefs).forEach(([key, ref]) => {
     if (ref.current) fadeAudio(ref.current, 0, 400);
   });
 
   if (isOn) {
-    const audio = soundRefs[type].current;
-    if (audio) {
-      audio.volume = 0;
-      audio.currentTime = 0;
-
-      audio.play()
-        .then(() => fadeAudio(audio, 1, 1200)) // smooth fade in
-        .catch(() => {});
-    }
+    setTimeout(() => {
+      const audio = soundRefs[type].current;
+      if (audio) {
+        audio.volume = 0;
+        audio.currentTime = 0;
+        audio.play()
+          .then(() => fadeAudio(audio, 1, 1200))
+          .catch(() => {});
+      }
+    }, 450); // just after the 400ms fade out finishes
   }
 
   setSoundStates({
@@ -202,6 +204,9 @@ function App() {
     [type]: isOn,
   });
 };
+
+
+
 
   useEffect(() => { setTimerSeconds(timerMinutes * 60); }, [timerMinutes]);
 
@@ -238,7 +243,15 @@ function App() {
       setTimerSeconds(timerMinutes * 60); setTimerRunning(true);
     }
   };
-  const stopTimer = () => { setTimerRunning(false); clearTimeout(timerRef.current); };
+  // const stopTimer = () => { setTimerRunning(false); clearTimeout(timerRef.current); };
+  const stopTimer = () => {
+  setTimerRunning(false);
+  clearTimeout(timerRef.current);
+  if (gentleGongRef.current) {
+    gentleGongRef.current.currentTime = 0;
+    gentleGongRef.current.play().catch(() => {});
+  }
+};
 
   function formatTime(secs) {
     const m = Math.floor(secs / 60);
