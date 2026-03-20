@@ -25,10 +25,10 @@ function App() {
     sound4: '/audio/native-flute.mp3',
     sound5: '/audio/tropical-rainforest.mp3',
     sound6: '/audio/desert-night.mp3',
-    freq528: '/audio/frequency/528hz.mp3',
-    freq432: '/audio/frequency/432hz.mp3',
-    freq396: '/audio/frequency/396hz.mp3',
-    freq40:  '/audio/frequency/40hz.mp3',
+    freq528: '/audio/frequencies/528hz.mp3',
+    freq432: '/audio/frequencies/432hz.mp3',
+    freq396: '/audio/frequencies/396hz.mp3',
+    freq40:  '/audio/frequencies/40hz.mp3',
     gong:    '/audio/1.mp3',
   };
 
@@ -60,7 +60,10 @@ function App() {
   const [showLightPanel, setShowLightPanel] = useState(false);
   const [lightBgChoice, setLightBgChoice] = useState('none');
   const lightPanelRef = useRef(null);
+  const [audioUnlocked, setAudioUnlocked] = useState(false);
 
+
+  
   useEffect(() => {
     if (!showLightPanel) return;
     const handleClick = (e) => {
@@ -70,29 +73,135 @@ function App() {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [showLightPanel]);
 
+
+  
   // ✅ FIX 2: audio logic OUTSIDE setState so browser allows play()
+  // const toggleFrequency = (freqKey) => {
+  //   const isOn = !freqStates[freqKey];
+  //   const audio = freqRefs[freqKey].current;
+  //   if (audio) {
+  //     if (isOn) { audio.volume = 1; audio.currentTime = 0; audio.play().catch(() => {}); }
+  //     else { audio.pause(); audio.currentTime = 0; }
+  //   }
+  //   setFreqStates(prev => ({ ...prev, [freqKey]: isOn }));
+  // };
+
+  
+// toggleFrequency
   const toggleFrequency = (freqKey) => {
-    const isOn = !freqStates[freqKey];
-    const audio = freqRefs[freqKey].current;
+  const isOn = !freqStates[freqKey];
+  const audio = freqRefs[freqKey].current;
+
+  if (!audioUnlocked) {
     if (audio) {
-      if (isOn) { audio.volume = 1; audio.currentTime = 0; audio.play().catch(() => {}); }
-      else { audio.pause(); audio.currentTime = 0; }
+      audio.volume = 0;
+      audio.play().then(() => {
+        audio.pause();
+        audio.currentTime = 0;
+      }).catch(() => {});
     }
-    setFreqStates(prev => ({ ...prev, [freqKey]: isOn }));
-  };
+    setAudioUnlocked(true);
+  }
+
+  if (audio) {
+    if (isOn) {
+      audio.volume = 0;
+      audio.currentTime = 0;
+
+      audio.play()
+        .then(() => fadeAudio(audio, 1, 1200))
+        .catch(() => {});
+    } else {
+      fadeAudio(audio, 0, 500);
+    }
+  }
+
+  setFreqStates(prev => ({ ...prev, [freqKey]: isOn }));
+};
+
+  const fadeAudio = (audio, targetVolume, duration = 800) => {
+  if (!audio) return;
+
+  const step = 0.05;
+  const intervalTime = duration * step;
+  let currentVolume = audio.volume;
+
+  const fade = setInterval(() => {
+    if (targetVolume > currentVolume) {
+      currentVolume = Math.min(currentVolume + step, targetVolume);
+    } else {
+      currentVolume = Math.max(currentVolume - step, targetVolume);
+    }
+
+    audio.volume = currentVolume;
+
+    if (currentVolume === targetVolume) {
+      clearInterval(fade);
+      if (targetVolume === 0) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    }
+  }, intervalTime);
+};
 
   // ✅ FIX 2: audio logic OUTSIDE setState so browser allows play()
+  // const toggleSound = (type) => {
+  //   Object.values(soundRefs).forEach(ref => {
+  //     if (ref.current) { ref.current.pause(); ref.current.currentTime = 0; }
+  //   });
+  //   const isOn = !soundStates[type];
+  //   if (isOn) {
+  //     const audio = soundRefs[type].current;
+  //     if (audio) { audio.volume = 1; audio.currentTime = 0; audio.play().catch(() => {}); }
+  //   }
+  //   setSoundStates({ sound1: false, sound2: false, sound3: false, sound4: false, sound5: false, sound6: false, [type]: isOn });
+  // };
+
   const toggleSound = (type) => {
+  // unlock audio once (fixes iOS / Chrome issues)
+  if (!audioUnlocked) {
     Object.values(soundRefs).forEach(ref => {
-      if (ref.current) { ref.current.pause(); ref.current.currentTime = 0; }
+      if (ref.current) {
+        ref.current.volume = 0;
+        ref.current.play().then(() => {
+          ref.current.pause();
+          ref.current.currentTime = 0;
+        }).catch(() => {});
+      }
     });
-    const isOn = !soundStates[type];
-    if (isOn) {
-      const audio = soundRefs[type].current;
-      if (audio) { audio.volume = 1; audio.currentTime = 0; audio.play().catch(() => {}); }
+    setAudioUnlocked(true);
+  }
+
+  const isOn = !soundStates[type];
+
+  // fade out ALL sounds first
+  Object.entries(soundRefs).forEach(([key, ref]) => {
+    if (ref.current) fadeAudio(ref.current, 0, 400);
+  });
+
+  if (isOn) {
+    const audio = soundRefs[type].current;
+    if (audio) {
+      audio.volume = 0;
+      audio.currentTime = 0;
+
+      audio.play()
+        .then(() => fadeAudio(audio, 1, 1200)) // smooth fade in
+        .catch(() => {});
     }
-    setSoundStates({ sound1: false, sound2: false, sound3: false, sound4: false, sound5: false, sound6: false, [type]: isOn });
-  };
+  }
+
+  setSoundStates({
+    sound1: false,
+    sound2: false,
+    sound3: false,
+    sound4: false,
+    sound5: false,
+    sound6: false,
+    [type]: isOn,
+  });
+};
 
   useEffect(() => { setTimerSeconds(timerMinutes * 60); }, [timerMinutes]);
 
@@ -210,11 +319,17 @@ function App() {
         .freq-btn { position: relative; transition: all 0.3s ease; overflow: hidden; }
         .freq-btn::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,0.1),transparent); opacity:0; transition:opacity 0.3s; }
         .freq-btn:hover::after { opacity: 1; }
-        .freq-btn.active { animation: freqPulse 2s ease-in-out infinite; }
-        @keyframes freqPulse {
-          0%,100% { box-shadow: 0 0 15px currentColor; }
-          50% { box-shadow: 0 0 35px currentColor, 0 0 70px currentColor; }
+        .freq-btn.active { animation: freqPulse 6s ease-in-out infinite; }
+        
+            @keyframes freqPulse {
+          0%, 100% {
+            box-shadow: 0 0 6px currentColor;
+          }
+          50% {
+            box-shadow: 0 0 12px currentColor;
+          }
         }
+
         .breath-orb { border-radius: 50%; transition: all 4s cubic-bezier(0.4,0,0.2,1); }
         .breath-orb.inhale { transform: scale(1.4); box-shadow: 0 0 60px rgba(34,211,238,0.5), 0 0 100px rgba(34,211,238,0.2); }
         .breath-orb.hold   { transform: scale(1.4); box-shadow: 0 0 80px rgba(167,139,250,0.5), 0 0 120px rgba(167,139,250,0.2); }
@@ -354,7 +469,7 @@ function App() {
             <br/>
             <span className={darkMode ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-violet-300 to-cyan-300' : 'text-emerald-600'}>Flow</span>
           </h1>
-          <p className={`text-sm md:text-base text-center max-w-sm tracking-[0.15em] uppercase mt-2 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+          <p className={`text-sm md:text-base text-center max-w-sm tracking-[0.15em] uppercase mt-2 ${darkMode ? 'text-slate-400' : ''}`}>
             Experience deep relaxation through sound
           </p>
         </div>
@@ -399,8 +514,118 @@ function App() {
           </div>
         </div>
 
+          {/* ══ FREQUENCY HEALING ══ */}
+{/* ══ FREQUENCY HEALING ══ */}
+<div className={`w-full max-w-2xl rounded-3xl p-6 md:p-8 mb-6 ${darkMode ? 'glass-dark' : 'light-card'}`}>
+  <div className="flex items-center gap-3 mb-7">
+    <div className={`h-px flex-1 ${darkMode ? 'bg-gradient-to-r from-transparent to-violet-500/30' : 'bg-gradient-to-r from-transparent to-emerald-300'}`}/>
+    <h2 className={`font-display text-base tracking-[0.2em] uppercase ${darkMode ? 'text-violet-300' : 'text-emerald-700'}`}>Frequencies</h2>
+    <div className={`h-px flex-1 ${darkMode ? 'bg-gradient-to-l from-transparent to-violet-500/30' : 'bg-gradient-to-l from-transparent to-emerald-300'}`}/>
+  </div>
+
+  <div className="flex flex-col gap-3">
+    {freqCards.map(({ key, hz, label, color, border, glow, badge }) => {
+      const isActive = freqStates[key];
+      const isFocus = key === 'freq40';
+
+      return (
+        <button
+          key={key}
+          onClick={() => toggleFrequency(key)}
+          className={`freq-btn relative w-full rounded-2xl p-4 flex items-center justify-between text-left transition-all duration-500 border ${
+            isActive
+              ? `bg-gradient-to-r ${color} bg-opacity-20 ${border} shadow-md ${glow} active`
+              : darkMode
+                ? `glass-dark ${border} hover:border-white/20`
+                : `light-card ${border}`
+          } ${isFocus && !isActive ? (darkMode ? 'ring-1 ring-amber-400/20' : 'ring-1 ring-amber-300/40') : ''}`}
+        >
+
+          {/* LEFT SIDE */}
+          <div className="flex items-center gap-4">
+
+            {/* ICON + HZ FIX */}
+            <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-display font-bold text-sm ${
+              isActive
+                ? 'bg-white/20 text-white'
+                : darkMode
+                  ? 'bg-white/5 text-slate-400'
+                  : 'bg-slate-100 text-slate-500'
+            }`}>
+              <div className="flex items-center gap-1">
+                {isFocus && (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                    <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.46 2.5 2.5 0 0 1-1.7-3.2A4.5 4.5 0 1 1 9.5 2Z"/>
+                    <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.46 2.5 2.5 0 0 0 1.7-3.2A4.5 4.5 0 1 0 14.5 2Z"/>
+                  </svg>
+                )}
+                <span>{hz}</span>
+              </div>
+            </div>
+
+            {/* TEXT */}
+            <div>
+              <div className={`font-semibold text-sm flex items-center gap-2 ${
+                isActive ? 'text-white' : darkMode ? 'text-slate-200' : 'text-slate-700'
+              }`}>
+                {hz} Hz
+
+                {badge && (
+                  <span className={`text-[9px] font-bold tracking-widest px-1.5 py-0.5 rounded-full uppercase ${
+                    isActive
+                      ? 'bg-white/25 text-white'
+                      : 'bg-amber-400/20 text-amber-400'
+                  }`}>
+                    {badge}
+                  </span>
+                )}
+              </div>
+
+              <div className={`text-xs mt-0.5 ${
+                isActive ? 'text-white/70' : darkMode ? 'text-slate-500' : 'text-slate-400'
+              }`}>
+                {label}
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT SIDE VISUALIZER (CALMED DOWN) */}
+          <div className={`flex items-center gap-2 text-xs font-semibold tracking-wider ${
+            isActive ? 'text-white' : darkMode ? 'text-slate-500' : 'text-slate-400'
+          }`}>
+            {isActive ? (
+              <>
+                <div className="flex items-end gap-0.5 h-5">
+                  {[...Array(isFocus ? 4 : 4)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="wave-bar w-1 bg-current rounded-full"
+                      style={{
+                        height: `${6 + i * 2}px`,
+                        animationDelay: `${i * 0.2}s`,
+                        animationDuration: isFocus ? '1.8s' : '1.2s', // 🔥 slower for 40hz
+                      }}
+                    />
+                  ))}
+                </div>
+                PLAYING
+              </>
+            ) : 'PLAY ›'}
+          </div>
+
+          <audio ref={freqRefs[key]} src={sounds[key]} preload="auto" loop />
+        </button>
+      );
+    })}
+  </div>
+</div>
+
+
+
+
+
         {/* ══ FREQUENCY HEALING ══ */}
-        <div className={`w-full max-w-2xl rounded-3xl p-6 md:p-8 mb-6 ${darkMode ? 'glass-dark' : 'light-card'}`}>
+        {/* <div className={`w-full max-w-2xl rounded-3xl p-6 md:p-8 mb-6 ${darkMode ? 'glass-dark' : 'light-card'}`}>
           <div className="flex items-center gap-3 mb-7">
             <div className={`h-px flex-1 ${darkMode ? 'bg-gradient-to-r from-transparent to-violet-500/30' : 'bg-gradient-to-r from-transparent to-emerald-300'}`}/>
             <h2 className={`font-display text-base tracking-[0.2em] uppercase ${darkMode ? 'text-violet-300' : 'text-emerald-700'}`}>Frequencies</h2>
@@ -418,6 +643,7 @@ function App() {
                   } ${isFocus&&!isActive ? (darkMode?'ring-1 ring-amber-400/20':'ring-1 ring-amber-300/40') : ''}`}
                 >
                   <div className="flex items-center gap-4">
+                    
                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-display font-bold text-sm ${isActive?'bg-white/20 text-white':darkMode?'bg-white/5 text-slate-400':'bg-slate-100 text-slate-500'}`}>
                       {isFocus ? (
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -426,7 +652,9 @@ function App() {
                         </svg>
                       ) : hz}
                     </div>
-                    <div>
+
+                  <div>
+
                       <div className={`font-semibold text-sm flex items-center gap-2 ${isActive?'text-white':darkMode?'text-slate-200':'text-slate-700'}`}>
                         {hz} Hz
                         {badge && <span className={`text-[9px] font-bold tracking-widest px-1.5 py-0.5 rounded-full uppercase ${isActive?'bg-white/25 text-white':'bg-amber-400/20 text-amber-400'}`}>{badge}</span>}
@@ -455,7 +683,7 @@ function App() {
               );
             })}
           </div>
-        </div>
+        </div> */}
 
         {/* ══ BREATHING + TIMER ══ */}
         <div className="w-full max-w-2xl grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
