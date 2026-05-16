@@ -469,12 +469,12 @@ const toggleSound = (type) => {
       {/* ══ MAIN CONTENT ══ */}
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-start pt-20 pb-24 px-4">
 
-        <div className="flex flex-col items-center mb-10 mt-6">
-          <div className={`flex items-center gap-3 mb-6 ${darkMode ? 'text-cyan-400/60' : 'text-emerald-500/60'}`}>
-            <div className={`h-px w-16 ${darkMode ? 'bg-gradient-to-r from-transparent to-cyan-400/60' : 'bg-gradient-to-r from-transparent to-emerald-400'}`}/>
-            <span className="text-xs tracking-[0.4em] uppercase font-display">Tica Rey Presents</span>
-            <div className={`h-px w-16 ${darkMode ? 'bg-gradient-to-l from-transparent to-cyan-400/60' : 'bg-gradient-to-l from-transparent to-emerald-400'}`}/>
-          </div>
+        <div className="flex flex-col items-center mb-10 mt-6 w-full">
+        <div className={`flex items-center justify-center gap-3 mb-6 w-full ${darkMode ? 'text-cyan-400/60' : 'text-emerald-500/60'}`}>
+          <div className={`h-px flex-1 max-w-[64px] ${darkMode ? 'bg-gradient-to-r from-transparent to-cyan-400/60' : 'bg-gradient-to-r from-transparent to-emerald-400'}`}/>
+          <span className="text-xs tracking-[0.4em] uppercase font-display shrink-0">Tica Rey Presents</span>
+          <div className={`h-px flex-1 max-w-[64px] ${darkMode ? 'bg-gradient-to-l from-transparent to-cyan-400/60' : 'bg-gradient-to-l from-transparent to-emerald-400'}`}/>
+        </div>
           <h1 className={`font-display text-5xl md:text-7xl font-bold text-center float-title tracking-tight leading-none mb-4 ${
             darkMode ? 'text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-100 to-cyan-400 title-glow' : 'text-transparent bg-clip-text bg-gradient-to-b from-slate-900 via-emerald-800 to-emerald-600'
           }`}>
